@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.json">
+<title>Lecture Marker</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f7f8;color:#111827}
+main{max-width:720px;margin:auto;padding:24px 16px 40px}.top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+h1,h2,h3,p{margin:0}.muted{color:#6b7280;font-size:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card,.row{background:white;border:1px solid #e5e7eb;border-radius:16px;padding:16px}
+button,input{font:inherit}button{min-height:44px;border-radius:12px;border:1px solid #d1d5db;background:white;padding:10px 14px;cursor:pointer}
+button.primary{background:#111827;color:white;border-color:#111827}.subject{min-height:110px;text-align:left}.subject b{font-size:19px}.wide{width:100%}
+.actions{display:flex;flex-wrap:wrap;gap:8px}.clock{text-align:center;font-size:52px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.03em;margin:18px 0}
+input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:12px;background:white}
+.mark{font-size:18px;font-weight:700;padding:14px 20px;min-width:180px}.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.danger{color:#b91c1c}.back{padding:8px 12px}
+@media(max-width:420px){.clock{font-size:43px}.grid{gap:9px}.subject{padding:13px}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+(() => {
+const KEY="lecture-marker-v1";
+const subjects=["Pharma","Patho","Para","Micro"];
+let db={Pharma:[],Patho:[],Para:[],Micro:[]};
+try{db={...db,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){}
+const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+const fmt=ms=>{let s=Math.floor(ms/1000),h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`};
+const app=document.getElementById("app");
+let timer=null;
+
+function home(){
+ app.innerHTML=`<div class="top"><div><h1>Lecture Marker</h1><p class="muted">Choose your subject</p></div></div>
+ <div class="grid">${subjects.map(s=>`<button class="card subject" data-s="${s}"><b>${s}</b><div class="muted">${db[s].length} lecture${db[s].length===1?"":"s"}</div></button>`).join("")}</div>`;
+ app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>subject(b.dataset.s));
+}
+function subject(s){
+ app.innerHTML=`<div class="top"><button class="back" id="back">←</button><div><h2>${s}</h2><p class="muted">Lectures</p></div></div>
+ <button class="primary wide" id="new">＋ New Lecture</button>
+ <div class="list" id="list"></div>`;
+ app.querySelector("#back").onclick=home;
+ app.querySelector("#new").onclick=()=>editor(s,null);
+ const list=app.querySelector("#list");
+ const lectures=[...db[s]].reverse();
+ if(!lectures.length)list.innerHTML='<p class="muted">No lectures saved yet.</p>';
+ lectures.forEach(l=>{
+   const b=document.createElement("button"); b.className="row"; b.style.textAlign="left";
+   b.innerHTML=`<span><b>${esc(l.name||"Untitled Lecture")}</b><br><span class="muted">${l.marks.length} marker${l.marks.length===1?"":"s"}</span></span><span>›</span>`;
+   b.onclick=()=>editor(s,l.id); list.appendChild(b);
+ });
+}
+function editor(s,id){
+ let l=id?db[s].find(x=>x.id===id):null;
+ if(!l){l={id:Date.now().toString(),name:"",marks:[],created:Date.now()};db[s].push(l);save();}
+ let running=false,elapsed=0,startAt=0,raf=0;
+ const current=()=>running?elapsed+performance.now()-startAt:elapsed;
+ const render=()=>{
+   app.innerHTML=`<div class="top"><button class="back" id="back">←</button><div><div class="muted">${s}</div><h2>${esc(l.name||"New Lecture")}</h2></div></div>
+   <input id="name" placeholder="Lecture name" value="${esc(l.name)}">
+   <div class="clock" id="clock">00:00:00</div>
+   <div class="actions">
+    <button class="primary" id="start">Start</button>
+    <button class="mark" id="mark" disabled>🔖 MARK</button>
+    <button id="save">Save & Back</button>
+   </div>
+   <div class="card" style="margin-top:16px"><h3>Important points</h3><div class="list" id="marks"></div></div>
+   <button id="delete" class="danger" style="margin-top:16px">Delete lecture</button>`;
+   const clock=app.querySelector("#clock"),start=app.querySelector("#start"),mark=app.querySelector("#mark"),name=app.querySelector("#name"),marks=app.querySelector("#marks");
+   const paint=()=>{clock.textContent=fmt(current());if(running)raf=requestAnimationFrame(paint)};
+   const drawMarks=()=>{
+    marks.innerHTML=l.marks.length?l.marks.map((t,i)=>`<div class="row"><span><b>${fmt(t)}</b><br><span class="muted">Point ${i+1}</span></span><button data-del="${i}">Remove</button></div>`).join(""):'<p class="muted">Press MARK when the lecturer says something important.</p>';
+    marks.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{l.marks.splice(+b.dataset.del,1);save();drawMarks()});
+   };
+   app.querySelector("#back").onclick=()=>{l.name=name.value.trim()||"Untitled Lecture";save();cancelAnimationFrame(raf);subject(s)};
+   name.oninput=()=>{l.name=name.value;save()};
+   start.onclick=()=>{
+     if(!running){startAt=performance.now();running=true;start.textContent="Pause";mark.disabled=false;raf=requestAnimationFrame(paint)}
+     else{elapsed+=performance.now()-startAt;running=false;start.textContent="Resume";cancelAnimationFrame(raf);paint()}
+   };
+   mark.onclick=()=>{l.marks.push(current());save();drawMarks()};
+   app.querySelector("#save").onclick=()=>{l.name=name.value.trim()||"Untitled Lecture";save();cancelAnimationFrame(raf);subject(s)};
+   app.querySelector("#delete").onclick=()=>{if(confirm("Delete this lecture?")){db[s]=db[s].filter(x=>x.id!==l.id);save();subject(s)}};
+   drawMarks();paint();
+ };
+ render();
+}
+home();
+})();
+</script>
+</body>
+</html>
