@@ -3,496 +3,985 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827">
+
+<meta name="theme-color" content="#0b1f3a">
 <link rel="manifest" href="manifest.json">
+
 <title>Lecture Marker</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#0b0f14;
-  color:#f5f5f5;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
+  "SF Pro Text",Arial,sans-serif;
+  background:#ffffff;
+  color:#0b1f3a;
 }
+
 main{
   max-width:720px;
   margin:auto;
-  padding:24px 16px 40px;
+  padding:28px 16px 50px;
 }
-h1,h2,h3,p{margin:0}
-.muted{
-  color:#6b7280;
-  font-size:14px;
+
+h1{
+  margin:0;
+  font-size:38px;
+  font-weight:800;
+  letter-spacing:-1px;
 }
-button,input,select{font:inherit}
-button{
-  min-height:44px;
-  border-radius:10px;
-  border:1px solid #374151;
-  background:#1f2937;
-  color:white;
-  padding:10px 16px;
+
+h2{
+  margin:0;
+  font-size:25px;
 }
-button.primary{
-  background:#111827;
-  border-color:#4b5563;
+
+h3{
+  margin:0 0 8px;
 }
-button.mark{
-  font-size:18px;
-  font-weight:700;
-  padding:14px 20px;
-  background:#111827;
+
+p{
+  margin:0;
 }
-button.danger{
-  color:#ff6b6b;
+
+.subtitle{
+  color:#718096;
+  font-size:16px;
+  margin-top:6px;
 }
-input,select{
-  width:100%;
-  padding:13px;
-  border:1px solid #374151;
-  border-radius:10px;
-  background:#111827;
-  color:white;
+
+.header{
+  margin-bottom:24px;
 }
-.grid{
-  display:grid;
-  gap:10px;
-}
+
 .card{
-  background:#111827;
-  border:1px solid #263241;
-  border-radius:14px;
-  padding:16px;
+  background:#f3f8fc;
+  border:1px solid #cbdbea;
+  border-radius:24px;
+  padding:18px;
+  margin-top:16px;
+  box-shadow:0 5px 18px rgba(11,31,58,.06);
 }
+
+input,
+select,
+button{
+  width:100%;
+  font:inherit;
+  border-radius:16px;
+  min-height:52px;
+}
+
+input,
+select{
+  border:1px solid #c5d5e5;
+  background:#ffffff;
+  color:#0b1f3a;
+  padding:14px 16px;
+  outline:none;
+}
+
+input:focus,
+select:focus{
+  border-color:#6fa8d6;
+  box-shadow:0 0 0 3px rgba(111,168,214,.18);
+}
+
+button{
+  border:1px solid #c5d5e5;
+  background:#ffffff;
+  color:#0b1f3a;
+  padding:12px 16px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.primary{
+  background:#0b1f3a;
+  color:#ffffff;
+  border-color:#0b1f3a;
+}
+
+.primary:hover{
+  background:#102b50;
+}
+
+.mark{
+  background:#6fa8d6;
+  color:#ffffff;
+  border-color:#6fa8d6;
+  font-size:20px;
+  font-weight:800;
+  min-height:64px;
+}
+
+.mark:hover{
+  background:#5d98c8;
+}
+
+.danger{
+  color:#a61b1b;
+  border-color:#e5baba;
+  background:#fffafa;
+}
+
 .actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
 }
+
+.actions .mark{
+  grid-column:1 / -1;
+}
+
 .row{
   display:flex;
   justify-content:space-between;
   align-items:center;
   gap:10px;
 }
-.clock{
-  font-size:52px;
+
+.label{
+  font-size:14px;
   font-weight:800;
-  text-align:center;
-  letter-spacing:1px;
-  margin:20px 0 8px;
+  color:#49647f;
+  margin-bottom:7px;
 }
-.counter{
+
+.field{
+  margin-top:12px;
+}
+
+.clock{
   text-align:center;
-  color:#9ca3af;
+  font-size:58px;
+  font-weight:800;
+  letter-spacing:-2px;
+  color:#0b1f3a;
+  padding:18px 0 8px;
+  font-variant-numeric:tabular-nums;
+}
+
+.modeBadge{
+  text-align:center;
+  color:#607b96;
+  font-size:14px;
   font-weight:700;
-  margin-bottom:18px;
+  margin-bottom:12px;
 }
-.speed-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.mark-item{
-  display:flex;
-  justify-content:space-between;
+
+.counter{
+  display:inline-flex;
   align-items:center;
+  justify-content:center;
+  background:#dcecf8;
+  color:#0b1f3a;
+  border-radius:999px;
+  padding:8px 14px;
+  font-weight:800;
+  font-size:14px;
+}
+
+.markerList{
+  margin-top:14px;
+}
+
+.markerItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   gap:10px;
-  padding:10px 0;
-  border-bottom:1px solid #263241;
-}
-.mark-item:last-child{
-  border-bottom:0;
-}
-.subject{
-  padding:12px;
-  border:1px solid #263241;
-  border-radius:10px;
-  background:#111827;
-}
-.subject h3{
-  margin-bottom:8px;
-}
-.lecture{
-  margin-top:10px;
-}
-.lecture button{
+  background:#ffffff;
+  border:1px solid #d1dfeb;
+  border-radius:15px;
+  padding:12px 14px;
   margin-top:8px;
 }
+
+.markerTime{
+  font-weight:800;
+  color:#0b1f3a;
+}
+
+.markerNumber{
+  color:#6b849d;
+  font-size:13px;
+}
+
+.smallBtn{
+  width:auto;
+  min-height:38px;
+  padding:7px 12px;
+  border-radius:12px;
+  font-size:13px;
+}
+
+.subjectCard{
+  background:#ffffff;
+  border:1px solid #d1dfeb;
+  border-radius:20px;
+  padding:18px;
+  margin-top:12px;
+  cursor:pointer;
+}
+
+.subjectCard:active{
+  transform:scale(.99);
+}
+
+.subjectTitle{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:23px;
+  font-weight:800;
+}
+
+.empty{
+  color:#7a8da1;
+  margin-top:7px;
+}
+
+.lectureItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:10px;
+  padding:13px;
+  background:#f4f8fb;
+  border-radius:15px;
+  border:1px solid #d8e3ed;
+}
+
+.lectureName{
+  font-weight:800;
+  color:#0b1f3a;
+}
+
+.lectureMeta{
+  color:#718096;
+  font-size:13px;
+  margin-top:3px;
+}
+
+.backBtn{
+  width:auto;
+  min-height:42px;
+  padding:8px 14px;
+  margin-bottom:14px;
+}
+
+.tip{
+  color:#718096;
+  font-size:13px;
+  line-height:1.5;
+  margin-top:9px;
+}
+
+.hidden{
+  display:none;
+}
+
 @media(max-width:420px){
-  .clock{font-size:43px}
-  .speed-row{grid-template-columns:1fr}
+  main{
+    padding:22px 14px 40px;
+  }
+
+  h1{
+    font-size:34px;
+  }
+
+  .clock{
+    font-size:47px;
+  }
+
+  .card{
+    border-radius:21px;
+  }
 }
 </style>
 </head>
 
 <body>
+
 <main id="app"></main>
 
 <script>
-(()=>{
-const KEY="lecture-marker-v1";
-const subjects=["Pharma","Patho","Para","Micro"];
-let db=JSON.parse(localStorage.getItem(KEY)||"{}");
+(() => {
 
-const saveDB=()=>{
-  localStorage.setItem(KEY,JSON.stringify(db));
-};
+const KEY = "lecture-marker-v1";
 
-const fmt=ms=>{
-  ms=Math.max(0,Math.floor(ms));
-  let s=Math.floor(ms/1000);
-  let h=Math.floor(s/3600);
-  let m=Math.floor((s%3600)/60);
-  s=s%60;
-  return [h,m,s].map((x,i)=>i===0?String(x).padStart(2,"0"):String(x).padStart(2,"0")).join(":");
-};
+const subjects = [
+  {
+    name:"Pharma",
+    emoji:"💊"
+  },
+  {
+    name:"Patho",
+    emoji:"🔬"
+  },
+  {
+    name:"Para",
+    emoji:"🦠"
+  },
+  {
+    name:"Micro",
+    emoji:"🧫"
+  }
+];
 
-const speeds=[1,1.25,1.5,1.6,1.7,1.75,2];
+let db = JSON.parse(localStorage.getItem(KEY) || "{}");
+
+function saveDB(){
+  localStorage.setItem(KEY, JSON.stringify(db));
+}
+
+function escapeHTML(str){
+  return String(str ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function fmt(ms){
+  ms = Math.max(0, Math.floor(ms));
+
+  const total = Math.floor(ms / 1000);
+
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+
+  return [
+    h,
+    m,
+    s
+  ].map((x,i) => i === 0 ? String(x).padStart(2,"0")
+    : String(x).padStart(2,"0"))
+   .join(":");
+}
+
+function uid(){
+  return Date.now().toString(36) +
+    Math.random().toString(36).slice(2);
+}
 
 function home(){
-  app.innerHTML=`
-    <h1>Lecture Marker</h1>
-    <p class="muted" style="margin-top:6px">Mark important points during lectures</p>
 
-    <div class="card" style="margin-top:20px">
-      <input id="name" placeholder="Lecture name">
-      <div style="height:10px"></div>
-
-      <select id="subject">
-        ${subjects.map(s=>`<option>${s}</option>`).join("")}
-      </select>
-
-      <div style="height:10px"></div>
-
-      <select id="mode">
-        <option value="live">Live Lecture — Real Time</option>
-        <option value="recorded">Recorded Lecture — Playback Speed</option>
-      </select>
-
-      <div style="height:10px"></div>
-
-      <select id="speed">
-        ${speeds.map(s=>`<option value="${s}">${s}×</option>`).join("")}
-      </select>
-
-      <button class="primary" id="create" style="width:100%;margin-top:12px">
-        Start Lecture
-      </button>
+  app.innerHTML = `
+    <div class="header">
+      <h1>🎓 Lecture Marker</h1>
+      <p class="subtitle">
+        🔖 Mark important points during lectures
+      </p>
     </div>
 
-    <div id="lists"></div>
+    <div class="card">
+
+      <div class="field">
+        <div class="label">📝 Lecture Name</div>
+        <input id="newName"
+          placeholder="Enter lecture name">
+      </div>
+
+      <div class="field">
+        <div class="label">📚 Subject</div>
+        <select id="newSubject">
+          ${subjects.map(s =>
+            `<option value="${s.name}">
+              ${s.emoji} ${s.name}
+            </option>`
+          ).join("")}
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="label">🎥 Lecture Type</div>
+        <select id="newMode">
+          <option value="live">
+            🎙️ Live Lecture — Real Time
+          </option>
+
+          <option value="recorded">
+            🎥 Recorded Lecture — Playback Speed
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="label">⚡ Playback Speed</div>
+        <select id="newSpeed">
+          <option value="1">1×</option>
+          <option value="1.25">1.25×</option>
+          <option value="1.5">1.5×</option>
+          <option value="1.6">1.6×</option>
+          <option value="1.7">1.7×</option>
+          <option value="1.75">1.75×</option>
+          <option value="2">2×</option>
+        </select>
+
+        <p class="tip">
+          💡 Choose the same speed you're using in your
+          lecture player.
+        </p>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="startLecture">
+          🚀 Start Lecture
+        </button>
+      </div>
+
+    </div>
+
+    <div id="subjectLists"></div>
   `;
 
-  const modeEl=document.querySelector("#mode");
-  const speedEl=document.querySelector("#speed");
+  const mode = document.querySelector("#newMode");
+  const speed = document.querySelector("#newSpeed");
 
-  const updateSpeed=()=>{
-    speedEl.disabled=modeEl.value==="live";
-  };
+  function updateSpeedState(){
+    speed.disabled = mode.value !== "recorded";
 
-  modeEl.onchange=updateSpeed;
-  updateSpeed();
+    if(mode.value === "live"){
+      speed.value = "1";
+    }
+  }
 
-  create.onclick=()=>{
-    const name=document.querySelector("#name").value.trim();
-    if(!name)return alert("Enter lecture name");
+  mode.onchange = updateSpeedState;
+  updateSpeedState();
 
-    const subject=document.querySelector("#subject").value;
-    const mode=modeEl.value;
-    const speed=mode==="live"?1:Number(speedEl.value);
+  document.querySelector("#startLecture").onclick = () => {
 
-    editor(subject,null,{
+    const name =
+      document.querySelector("#newName").value.trim();
+
+    if(!name){
+      alert("📝 Enter a lecture name first.");
+      return;
+    }
+
+    const subject =
+      document.querySelector("#newSubject").value;
+
+    const lecture = {
+      id:uid(),
       name,
-      mode,
-      speed,
+      subject,
+      mode:mode.value,
+      speed:Number(speed.value),
       marks:[]
-    });
+    };
+
+    if(!db[subject]){
+      db[subject] = [];
+    }
+
+    db[subject].push(lecture);
+    saveDB();
+
+    editor(subject, lecture.id);
   };
 
   drawHomeLists();
 }
 
 function drawHomeLists(){
-  const lists=document.querySelector("#lists");
 
-  lists.innerHTML=subjects.map(s=>{
-    const arr=db[s]||[];
+  const container =
+    document.querySelector("#subjectLists");
+
+  container.innerHTML = subjects.map(s => {
+
+    const list = db[s.name] || [];
 
     return `
-      <div class="card subject" style="margin-top:14px">
-        <h3>${s}</h3>
+      <div class="subjectCard">
+
+        <div class="subjectTitle">
+          ${s.emoji} ${s.name}
+        </div>
 
         ${
-          arr.length
-          ? arr.map((l,i)=>`
-            <div class="lecture">
-              <div class="row">
-                <span>${escapeHTML(l.name)}</span>
-                <span class="muted">${l.marks.length} 🔖</span>
+          list.length === 0
+          ? `<div class="empty">
+               No lectures yet
+             </div>`
+          : list.map(l => `
+              <div class="lectureItem"
+                   data-open="${l.id}">
+
+                <div>
+                  <div class="lectureName">
+                    ${escapeHTML(l.name)}
+                  </div>
+
+                  <div class="lectureMeta">
+                    ${l.mode === "recorded"
+                      ? `🎥 Recorded • ⚡ ${l.speed || 1}×`
+                      : `🎙️ Live Lecture`}
+                    • 🔖 ${l.marks?.length || 0} markers
+                  </div>
+                </div>
+
+                <button class="smallBtn">
+                  ▶️ Open
+                </button>
+
               </div>
-              <button data-open="${i}" data-subject="${s}" style="width:100%">
-                Open
-              </button>
-            </div>
-          `).join("")
-          : `<p class="muted">No lectures yet</p>`
+            `).join("")
         }
+
       </div>
     `;
   }).join("");
 
-  lists.querySelectorAll("[data-open]").forEach(btn=>{
-    btn.onclick=()=>{
-      editor(btn.dataset.subject,Number(btn.dataset.open));
-    };
-  });
+  container.querySelectorAll("[data-open]")
+    .forEach(item => {
+
+      item.onclick = e => {
+
+        if(e.target.tagName === "BUTTON" ||
+           e.target.closest("button")){
+
+          const id = item.dataset.open;
+          const subject =
+            item.closest(".subjectCard")
+              .querySelector(".subjectTitle")
+              .textContent
+              .trim();
+
+          const found = subjects.find(s =>
+            subject.includes(s.name)
+          );
+
+          if(found){
+            editor(found.name,id);
+          }
+
+          return;
+        }
+
+        const id = item.dataset.open;
+
+        const foundSubject =
+          subjects.find(s =>
+            (db[s.name] || []).some(l => l.id === id)
+          );
+
+        if(foundSubject){
+          editor(foundSubject.name,id);
+        }
+      };
+    });
 }
 
-function escapeHTML(str){
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
+function editor(subject,id){
 
-function editor(subject,id,data=null){
+  const list = db[subject] || [];
 
-  if(!db[subject])db[subject]=[];
+  const lecture =
+    list.find(x => x.id === id);
 
-  let l;
-
-  if(id===null){
-    l={
-      name:data.name,
-      mode:data.mode||"live",
-      speed:data.speed||1,
-      marks:data.marks||[]
-    };
-  }else{
-    l=db[subject][id];
-    l.mode=l.mode||"live";
-    l.speed=l.speed||1;
-    l.marks=l.marks||[];
+  if(!lecture){
+    home();
+    return;
   }
 
-  let running=false;
-  let elapsed=0;
-  let startAt=0;
-  let raf=0;
-  let speed=Number(l.speed)||1;
+  lecture.marks ||= [];
+  lecture.mode ||= "live";
+  lecture.speed ||= 1;
 
-  app.innerHTML=`
-    <div class="row">
-      <button id="back">← Back</button>
-      <span class="muted">${subject}</span>
+  let running = false;
+  let elapsed = 0;
+  let startAt = 0;
+  let raf = 0;
+
+  function current(){
+
+    if(!running){
+      return elapsed;
+    }
+
+    return elapsed +
+      (performance.now() - startAt) *
+      (lecture.mode === "recorded"
+        ? lecture.speed
+        : 1);
+  }
+
+  app.innerHTML = `
+
+    <button class="backBtn" id="back">
+      ← Back
+    </button>
+
+    <div class="header">
+      <h1>🎓 Lecture</h1>
+      <p class="subtitle">
+        📚 ${escapeHTML(subject)}
+      </p>
     </div>
 
-    <div class="card" style="margin-top:16px">
-      <input id="lectureName" value="${escapeHTML(l.name||"")}">
+    <div class="card">
 
-      <div style="height:10px"></div>
+      <div class="field">
+        <div class="label">📝 Lecture Name</div>
+        <input id="lectureName"
+          value="${escapeHTML(lecture.name)}">
+      </div>
 
-      <select id="mode">
-        <option value="live" ${l.mode==="live"?"selected":""}>
-          Live Lecture — Real Time
-        </option>
-        <option value="recorded" ${l.mode==="recorded"?"selected":""}>
-          Recorded Lecture — Playback Speed
-        </option>
-      </select>
+      <div class="field">
+        <div class="label">🎥 Lecture Type</div>
 
-      <div style="height:10px"></div>
-
-      <select id="speed">
-        ${speeds.map(s=>`
-          <option value="${s}" ${Number(l.speed)===s?"selected":""}>
-            ${s}× Playback
+        <select id="mode">
+          <option value="live"
+            ${lecture.mode === "live" ? "selected" : ""}>
+            🎙️ Live Lecture — Real Time
           </option>
-        `).join("")}
-      </select>
 
-      <div class="clock" id="clock">00:00:00</div>
+          <option value="recorded"
+            ${lecture.mode === "recorded" ? "selected" : ""}>
+            🎥 Recorded Lecture — Playback Speed
+          </option>
+        </select>
+      </div>
 
-      <div class="counter" id="counter">
-        🔖 ${l.marks.length} Markers
+      <div class="field">
+        <div class="label">⚡ Playback Speed</div>
+
+        <select id="speed">
+          ${[
+            1,1.25,1.5,1.6,1.7,1.75,2
+          ].map(v => `
+            <option value="${v}"
+              ${Number(lecture.speed) === v ? "selected" : ""}>
+              ${v}×
+            </option>
+          `).join("")}
+        </select>
+      </div>
+
+      <div class="modeBadge" id="modeBadge">
+        ${lecture.mode === "recorded"
+          ? `🎥 Recorded • ${lecture.speed}×`
+          : `🎙️ Live • Real Time`}
+      </div>
+
+      <div class="clock" id="clock">
+        00:00:00
+      </div>
+
+      <div style="text-align:center">
+        <span class="counter" id="counter">
+          🔖 0 Markers
+        </span>
       </div>
 
       <div class="actions">
-        <button class="primary" id="start">Start</button>
-        <button class="mark" id="mark" disabled>🔖 MARK</button>
-        <button id="save">Save & Back</button>
+
+        <button class="primary" id="start">
+          ▶️ Start
+        </button>
+
+        <button class="mark"
+                id="mark"
+                disabled>
+          🔖 MARK
+        </button>
+
+        <button id="save">
+          💾 Save & Back
+        </button>
+
       </div>
+
+      <p class="tip">
+        💡 For recorded lectures, set the speed to match
+        the playback speed you're watching.
+      </p>
+
     </div>
 
-    <div class="card" style="margin-top:16px">
+    <div class="card">
+
       <div class="row">
-        <h3>Markers</h3>
-        <span class="muted">${l.marks.length}</span>
+        <h2>🔖 Markers</h2>
+
+        <span class="counter">
+          ${lecture.marks.length}
+        </span>
       </div>
 
-      <div id="marks"></div>
+      <div class="markerList" id="markers">
+      </div>
+
     </div>
 
-    <div class="card" style="margin-top:16px">
-      <button id="delete" class="danger" style="width:100%">
-        Delete Lecture
+    <div class="card">
+
+      <button class="danger" id="delete">
+        🗑️ Delete Lecture
       </button>
+
     </div>
   `;
 
-  const clock=document.querySelector("#clock");
-  const counter=document.querySelector("#counter");
-  const start=document.querySelector("#start");
-  const mark=document.querySelector("#mark");
-  const modeEl=document.querySelector("#mode");
-  const speedEl=document.querySelector("#speed");
+  const clock =
+    document.querySelector("#clock");
 
-  const current=()=>{
-    if(!running)return elapsed;
+  const start =
+    document.querySelector("#start");
 
-    const realElapsed=performance.now()-startAt;
+  const mark =
+    document.querySelector("#mark");
 
-    return elapsed+
-      realElapsed*
-      (modeEl.value==="live"?1:speed);
-  };
+  const speed =
+    document.querySelector("#speed");
 
-  const commitTime=()=>{
+  const mode =
+    document.querySelector("#mode");
+
+  const counter =
+    document.querySelector("#counter");
+
+  const markers =
+    document.querySelector("#markers");
+
+  const modeBadge =
+    document.querySelector("#modeBadge");
+
+  function paint(){
+
+    clock.textContent =
+      fmt(current());
+
+    counter.textContent =
+      `🔖 ${lecture.marks.length} ${
+        lecture.marks.length === 1
+        ? "Marker"
+        : "Markers"
+      }`;
+
     if(running){
-      elapsed=current();
-      startAt=performance.now();
+      raf = requestAnimationFrame(paint);
     }
-  };
+  }
 
-  const paint=()=>{
-    clock.textContent=fmt(current());
-    counter.textContent=`🔖 ${l.marks.length} Markers`;
+  function commitTime(){
 
     if(running){
-      raf=requestAnimationFrame(paint);
+      elapsed = current();
+      startAt = performance.now();
     }
-  };
+  }
 
-  const drawMarks=()=>{
-    const box=document.querySelector("#marks");
+  function updateModeUI(){
 
-    box.innerHTML=l.marks.length
-      ? l.marks.map((m,i)=>`
-        <div class="mark-item">
-          <span>
-            <strong>Marker ${i+1}</strong>
-            <span class="muted">${fmt(m)}</span>
-          </span>
-          <button data-del="${i}">Remove</button>
+    speed.disabled =
+      mode.value !== "recorded";
+
+    if(mode.value === "live"){
+      speed.value = "1";
+    }
+
+    modeBadge.textContent =
+      mode.value === "recorded"
+      ? `🎥 Recorded • ${speed.value}×`
+      : `🎙️ Live • Real Time`;
+  }
+
+  function drawMarks(){
+
+    if(!lecture.marks.length){
+
+      markers.innerHTML = `
+        <div class="empty">
+          📝 No markers yet.
         </div>
-      `).join("")
-      : `<p class="muted" style="margin-top:12px">No markers yet</p>`;
+      `;
 
-    box.querySelectorAll("[data-del]").forEach(btn=>{
-      btn.onclick=()=>{
-        l.marks.splice(Number(btn.dataset.del),1);
-        drawMarks();
-        counter.textContent=`🔖 ${l.marks.length} Markers`;
-      };
-    });
-  };
-
-  const updateSpeedState=()=>{
-    speedEl.disabled=modeEl.value==="live";
-  };
-
-  modeEl.onchange=()=>{
-    if(running)commitTime();
-
-    if(modeEl.value==="live"){
-      speed=1;
-      speedEl.value="1";
-    }else{
-      speed=Number(speedEl.value);
-    }
-
-    l.mode=modeEl.value;
-    l.speed=speed;
-
-    saveDB();
-    paint();
-    updateSpeedState();
-  };
-
-  speedEl.onchange=()=>{
-    if(running)commitTime();
-
-    speed=Number(speedEl.value);
-    l.speed=speed;
-
-    saveDB();
-    paint();
-  };
-
-  start.onclick=()=>{
-    if(!running){
-      startAt=performance.now();
-      running=true;
-      start.textContent="Pause";
-      mark.disabled=false;
-      paint();
-    }else{
-      elapsed=current();
-      running=false;
-      start.textContent="Start";
-      mark.disabled=true;
-      cancelAnimationFrame(raf);
-      paint();
-    }
-  };
-
-  mark.onclick=()=>{
-    l.marks.push(current());
-    drawMarks();
-    counter.textContent=`🔖 ${l.marks.length} Markers`;
-  };
-
-  document.querySelector("#lectureName").oninput=e=>{
-    l.name=e.target.value;
-  };
-
-  document.querySelector("#back").onclick=()=>{
-    cancelAnimationFrame(raf);
-    home();
-  };
-
-  document.querySelector("#save").onclick=()=>{
-    l.name=document.querySelector("#lectureName").value.trim()||"Untitled Lecture";
-    l.mode=modeEl.value;
-    l.speed=modeEl.value==="live"?1:Number(speedEl.value);
-
-    if(id===null){
-      db[subject].push(l);
-    }
-
-    saveDB();
-    home();
-  };
-
-  document.querySelector("#delete").onclick=()=>{
-    if(id===null){
-      home();
       return;
     }
 
-    if(confirm("Delete this lecture?")){
-      db[subject].splice(id,1);
+    markers.innerHTML =
+      lecture.marks.map((time,index) => `
+
+        <div class="markerItem">
+
+          <div>
+            <div class="markerNumber">
+              🔖 Marker ${index + 1}
+            </div>
+
+            <div class="markerTime">
+              ⏱️ ${fmt(time)}
+            </div>
+          </div>
+
+          <button class="smallBtn danger"
+                  data-del="${index}">
+            🗑️
+          </button>
+
+        </div>
+
+      `).join("");
+
+    markers.querySelectorAll("[data-del]")
+      .forEach(btn => {
+
+        btn.onclick = () => {
+
+          const index =
+            Number(btn.dataset.del);
+
+          lecture.marks.splice(index,1);
+
+          saveDB();
+          drawMarks();
+          paint();
+        };
+      });
+  }
+
+  document.querySelector("#back").onclick = () => {
+
+    if(running){
+      elapsed = current();
+      running = false;
+      cancelAnimationFrame(raf);
+    }
+
+    saveDB();
+    home();
+  };
+
+  document.querySelector("#lectureName")
+    .oninput = e => {
+      lecture.name = e.target.value;
       saveDB();
-      home();
+    };
+
+  mode.onchange = () => {
+
+    if(running){
+      commitTime();
+    }
+
+    lecture.mode = mode.value;
+
+    if(lecture.mode === "live"){
+      lecture.speed = 1;
+    }else{
+      lecture.speed =
+        Number(speed.value);
+    }
+
+    saveDB();
+    updateModeUI();
+    paint();
+  };
+
+  speed.onchange = () => {
+
+    if(running){
+      commitTime();
+    }
+
+    lecture.speed =
+      Number(speed.value);
+
+    saveDB();
+    updateModeUI();
+    paint();
+  };
+
+  start.onclick = () => {
+
+    if(!running){
+
+      startAt = performance.now();
+      running = true;
+
+      start.textContent =
+        "⏸️ Pause";
+
+      mark.disabled = false;
+
+      paint();
+
+    }else{
+
+      elapsed = current();
+      running = false;
+
+      cancelAnimationFrame(raf);
+
+      start.textContent =
+        "▶️ Start";
+
+      mark.disabled = true;
+
+      paint();
     }
   };
 
+  mark.onclick = () => {
+
+    if(!running) return;
+
+    lecture.marks.push(current());
+
+    saveDB();
+    drawMarks();
+    paint();
+  };
+
+  document.querySelector("#save").onclick = () => {
+
+    if(running){
+      elapsed = current();
+      running = false;
+      cancelAnimationFrame(raf);
+    }
+
+    saveDB();
+    home();
+  };
+
+  document.querySelector("#delete").onclick = () => {
+
+    const ok =
+      confirm(
+        "🗑️ Delete this lecture and all its markers?"
+      );
+
+    if(!ok) return;
+
+    db[subject] =
+      (db[subject] || [])
+        .filter(x => x.id !== id);
+
+    saveDB();
+    home();
+  };
+
+  updateModeUI();
   drawMarks();
-  updateSpeedState();
   paint();
 }
 
@@ -500,5 +989,6 @@ home();
 
 })();
 </script>
+
 </body>
 </html>
